@@ -1,5 +1,6 @@
 using SimpleTimeTracker.Tests.Helpers;
 using SimpleTimeTracker.Repositories;
+using SimpleTimeTracker.Models;
 
 namespace SimpleTimeTracker.Tests.Repositories
 {
@@ -147,6 +148,40 @@ namespace SimpleTimeTracker.Tests.Repositories
             Assert.Contains(entry2, recievedEntries);
             Assert.Contains(entry3, recievedEntries);
             Assert.Contains(entry4, recievedEntries);
+        }
+
+        [Fact]
+        public void GetAllEntries_ShouldReturn_UnalteredData()
+        {
+            var user = "MyTestUser";
+            var date = DateOnly.FromDateTime(DateTime.Now);
+            var project = "MyTestProject";
+            var description = "MyTestDescription";
+            var hours = 10;
+            var repository = new InMemoryTimesheetRepository();
+
+            repository.AddEntry(TestSetupHelper.GenerateEntry(user, date, project, description, hours));
+            var recievedEntries = repository.GetAllEntries();
+
+            Assert.Single(recievedEntries);
+            
+            var recievedEntry = recievedEntries.First();
+            Assert.Equal(user, recievedEntry.UserName);
+            Assert.Equal(date, recievedEntry.Date);
+            Assert.Equal(project, recievedEntry.Project);
+            Assert.Equal(description, recievedEntry.Description);
+            Assert.Equal(hours, recievedEntry.HoursWorked);
+        }
+
+        [Fact]
+        public void GetAllEntries_ShouldNotAllow_ExternalModification()
+        {
+            var repository = new InMemoryTimesheetRepository();
+            repository.AddEntry(TestSetupHelper.GenerateEntry());
+
+            var recievedEntries = (List<TimesheetEntry>)repository.GetAllEntries();
+
+            Assert.Throws<NotSupportedException>(() => recievedEntries.Add(TestSetupHelper.GenerateEntry()));
         }
         #endregion
     }
