@@ -15,6 +15,9 @@ namespace SimpleTimeTracker.Repositories
 
         public void AddEntry(TimesheetEntry entry) 
         {
+            if (entry == null)
+                throw new ArgumentNullException(nameof(entry), "Provided Timesheet Entry cannot be null");
+                
             Entries.Add(entry);
         }
 
