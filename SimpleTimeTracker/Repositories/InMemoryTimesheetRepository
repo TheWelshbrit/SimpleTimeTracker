@@ -6,7 +6,7 @@ namespace SimpleTimeTracker.Repositories
 {
     public class InMemoryTimesheetRepository : ITimesheetRepository
     {
-        private readonly List<TimesheetEntry> _entries = new List<TimesheetEntry>();
+        protected readonly List<TimesheetEntry> Entries { get; private set; } = new List<TimesheetEntry>();
 
         public IEnumerable<TimesheetEntry> GetAllEntries()
         {
