@@ -10,7 +10,7 @@ namespace SimpleTimeTracker.Repositories
 
         public IEnumerable<TimesheetEntry> GetAllEntries()
         {
-            return Entries;
+            return Entries.AsReadOnly();
         }
 
         public void AddEntry(TimesheetEntry entry) 
