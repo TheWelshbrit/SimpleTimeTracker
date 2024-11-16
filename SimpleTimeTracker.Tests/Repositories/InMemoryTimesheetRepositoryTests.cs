@@ -107,5 +107,47 @@ namespace SimpleTimeTracker.Tests.Repositories
             Assert.Contains(blankEntry, repository.Entries);
         }
         #endregion
+
+        #region GetAllEntries
+        [Fact]
+        public void GetAllEntries_ShouldReturnEmpty_WhenRepositoryIsNew()
+        {
+            var repository = new InMemoryTimesheetRepository();
+
+            var recievedEntries = repository.GetAllEntries();
+
+            Assert.Empty(recievedEntries);
+        }
+
+        [Fact]
+        public void GetAllEntries_ShouldReturnAllEntries_AndReflectRepositoryState()
+        {
+            var repository = new InMemoryTimesheetRepository();
+            var entry1 = TestSetupHelper.GenerateEntry();
+            var entry2 = TestSetupHelper.GenerateEntry();
+            var entry3 = TestSetupHelper.GenerateEntry();
+            var entry4 = TestSetupHelper.GenerateEntry();
+
+            // add and verify single entry
+            repository.AddEntry(entry1);
+
+            var recievedEntries = repository.GetAllEntries();
+            Assert.Single(recievedEntries);
+            Assert.Contains(entry1, recievedEntries);
+
+
+            // add additional entries and verify updated state
+            repository.AddEntry(entry2);
+            repository.AddEntry(entry3);
+            repository.AddEntry(entry4);
+            recievedEntries = repository.GetAllEntries();
+
+            Assert.Equal(4, recievedEntries.Count());
+            Assert.Contains(entry1, recievedEntries);
+            Assert.Contains(entry2, recievedEntries);
+            Assert.Contains(entry3, recievedEntries);
+            Assert.Contains(entry4, recievedEntries);
+        }
+        #endregion
     }
 }
