@@ -6,7 +6,7 @@ namespace SimpleTimeTracker.Repositories
 {
     public class InMemoryTimesheetRepository : ITimesheetRepository
     {
-        protected readonly List<TimesheetEntry> Entries { get; private set; } = new List<TimesheetEntry>();
+        protected internal List<TimesheetEntry> Entries { get; private set; } = new List<TimesheetEntry>();
 
         public IEnumerable<TimesheetEntry> GetAllEntries()
         {
@@ -27,6 +27,11 @@ namespace SimpleTimeTracker.Repositories
         public IEnumerable<string> GetDistinctUsers()
         {
             return Enumerable.Empty<string>();
+        }
+
+        public string GenerateCsvOutput()
+        {
+            return string.Empty;
         }
     }
 }
