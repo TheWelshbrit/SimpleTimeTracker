@@ -1,0 +1,57 @@
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Build Folders
+bin/
+obj/
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Logs and Database
+*.log
+*.ldb
+
+# ASP.NET Temporary Files
+**/appsettings*.json
+
+# Visual Studio Code files
+.vscode/
+*.code-workspace
+
+# Dependency Files
+node_modules/
+packages/
+
+# IDE-Specific Folders
+.idea/
+.vscode/
+
+# Dotnet-Specific
+project.lock.json
+project.fragment.lock.json
+*.pidb
+*.svclog
+*.swp
+*.dbmdl
+*.dbproj.schemaview
+*.dbproj*
+
+# Publish Output
+.publish/
+wwwroot/dist/
+
+# Configuration
+launchSettings.json
+
+# Testing
+TestResults/
+Coverage/
+
+# Other
+*.bak
+*.old
+*.orig
