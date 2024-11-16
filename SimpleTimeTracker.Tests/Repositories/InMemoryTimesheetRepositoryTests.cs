@@ -5,11 +5,12 @@ namespace SimpleTimeTracker.Tests.Repositories
 {
     public class InMemoryTimesheetRepositoryTests
     {
+        #region AddEntry
         [Fact]
         public void NewRepository_Begins_Empty()
         {
             var repository = new InMemoryTimesheetRepository();
-            Assert.Equal(0, repository.Entries.Count());
+            Assert.Empty(repository.Entries);
         }
         
         [Fact]
@@ -54,5 +55,57 @@ namespace SimpleTimeTracker.Tests.Repositories
             Assert.Equal(description, addedEntry.Description);
             Assert.Equal(hours, addedEntry.HoursWorked);
         }
+
+        [Fact]
+        public void AddEntry_ShouldThrowException_WhenEntryIsNull()
+        {
+            var repository = new InMemoryTimesheetRepository();
+
+            Assert.Throws<ArgumentNullException>(() => repository.AddEntry(null!)); // "!" suppresses compiler warning for passing null to non-nullable input
+        }
+
+        [Fact]
+        public void AddEntry_ShouldAllow_DuplicateEntries()
+        {
+            var repository = new InMemoryTimesheetRepository();
+            var entry = TestSetupHelper.GenerateEntry();
+
+            repository.AddEntry(entry);
+            repository.AddEntry(entry);
+
+            Assert.Equal(2, repository.Entries.Count());
+            Assert.Contains(entry, repository.Entries);
+        }
+
+        [Fact]
+        public void AddEntry_ShouldHandle_MultipleEntries()
+        {
+            var repository = new InMemoryTimesheetRepository();
+            var entry1 = TestSetupHelper.GenerateEntry();
+            var entry2 = TestSetupHelper.GenerateEntry();
+            var entry3 = TestSetupHelper.GenerateEntry();
+
+            repository.AddEntry(entry1);
+            repository.AddEntry(entry2);
+            repository.AddEntry(entry3);
+
+            Assert.Equal(3, repository.Entries.Count());
+            Assert.Contains(entry1, repository.Entries);
+            Assert.Contains(entry2, repository.Entries);
+            Assert.Contains(entry3, repository.Entries);
+        }
+
+        [Fact]
+        public void AddEntry_ShouldStoreBlankRecord_IfProvidedBlankData()
+        {
+            var repository = new InMemoryTimesheetRepository();
+
+            var blankEntry = TestSetupHelper.GenerateEntry(string.Empty, default(DateOnly), string.Empty, string.Empty, 0);
+            repository.AddEntry(blankEntry);
+
+            Assert.Single(repository.Entries);
+            Assert.Contains(blankEntry, repository.Entries);
+        }
+        #endregion
     }
 }
