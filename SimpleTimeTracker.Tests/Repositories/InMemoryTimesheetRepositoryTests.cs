@@ -179,7 +179,7 @@ namespace SimpleTimeTracker.Tests.Repositories
             var repository = new InMemoryTimesheetRepository();
             repository.AddEntry(TestSetupHelper.GenerateEntry());
 
-            var recievedEntries = (List<TimesheetEntry>)repository.GetAllEntries();
+            var recievedEntries = (ICollection<TimesheetEntry>)(repository.GetAllEntries());
 
             Assert.Throws<NotSupportedException>(() => recievedEntries.Add(TestSetupHelper.GenerateEntry()));
         }
