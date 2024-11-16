@@ -15,7 +15,7 @@ namespace SimpleTimeTracker.Repositories
 
         public void AddEntry(TimesheetEntry entry) 
         {
-
+            Entries.Add(entry);
         }
 
         public IEnumerable<string> GetDistinctProjects()
