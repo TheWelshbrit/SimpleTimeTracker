@@ -62,6 +62,16 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult GetCsv()
     {
-        return null;
+        try
+        {
+            var csvContent = _timesheetService.GenerateCsvOutput();
+            var fileBytes = System.Text.Encoding.UTF8.GetBytes(csvContent);
+            return File(fileBytes, "text/csv", "timesheet.csv");
+        }
+        catch (Exception)
+        {
+            TempData["Error"] = "An unexpected error occurred. Please try again later.";
+            return RedirectToAction("Index");
+        }
     }
 }
