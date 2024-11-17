@@ -1,6 +1,7 @@
 using SimpleTimeTracker.Interfaces;
 using SimpleTimeTracker.Models;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SimpleTimeTracker.Services
 {
@@ -54,7 +55,23 @@ namespace SimpleTimeTracker.Services
 
         public string GenerateCsvOutput()
         {
-            return string.Empty;
+            var entries = _repository.GetAllEntries();
+
+            var totalHoursPerDayPerUser = entries.GroupBy(entry => new { entry.UserName, entry.Date })
+                                                 .ToDictionary(
+                                                     group => group.Key,
+                                                     group => group.Sum(entry => entry.HoursWorked)
+                                                 );
+                
+            var csvBuilder = new StringBuilder();
+            csvBuilder.AppendLine("User Name,Date,Project,Description of Tasks,Hours Worked,Total Hours for the Day");
+            foreach (var entry in entries)
+            {
+                var totalHoursForDay = totalHoursPerDayPerUser[new { entry.UserName, entry.Date }];
+                csvBuilder.AppendLine($"{entry.UserName},{entry.Date},{entry.Project},{entry.Description},{entry.HoursWorked},{totalHoursForDay}");
+            }
+
+            return csvBuilder.ToString();
         }
     }
 }
