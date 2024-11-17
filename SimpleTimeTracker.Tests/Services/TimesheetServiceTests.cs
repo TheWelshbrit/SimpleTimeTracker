@@ -85,6 +85,53 @@ namespace SimpleTimeTracker.Tests.Services
             Assert.Throws<ArgumentException>(() => _service.AddEntry("User", futureDate, "Project", "Description", 1)); // Date in future
             Assert.Throws<ArgumentException>(() => _service.AddEntry("User", pastDate, "Project", "Description", 1));   // Date excessively in past
         }
+
+        [Fact]
+        public void AddEntry_ShouldThrowException_WhenInputsAreWhiteSpace()
+        {
+            var date = DateOnly.FromDateTime(DateTime.Now);
+
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("   ", date, "Project", "Description", 1));         // Null user
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", date, "   ", "Description", 1));            // Null project
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", date, "Project", "   ", 1));                // Null description
+        }
+
+        [Fact]
+        public void AddEntry_ShouldAllow_MultipleEntriesPerDay_ForAGivenUser()
+        {
+            var date = DateOnly.FromDateTime(DateTime.Now);
+            
+            _service.AddEntry("User", date, "Project1", "Description", 12);
+
+            try 
+            {
+                _service.AddEntry("User", date, "Project2", "Description", 8);
+            }
+            catch (Exception e)
+            {
+                Assert.False(true, $"Expected no exception, but got {e.Message} whilst attempting to add second valid entry");
+            }
+        
+            try 
+            {
+                _service.AddEntry("User", date, "Project3", "Description", 4);
+            }
+            catch (Exception e)
+            {
+                Assert.False(true, $"Expected no exception, but got {e.Message} whilst attempting to add final valid entry");
+            }
+        }
+
+        // TODO: return to advanced edge case should time permit
+        // [Fact]
+        // public void AddEntry_ShouldThrowException_WhenTotalHoursWorked_ForAUserInADay_ExceedAFullDay()
+        // {
+        //     var date = DateOnly.FromDateTime(DateTime.Now);
+            
+        //     _service.AddEntry("User", date, "Project", "Description", 12);
+
+        //     Assert.Throws<ArgumentException>(() => _service.AddEntry("User", date, "Project", "Description", 12.01));
+        // }
         #endregion
     }
 }
