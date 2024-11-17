@@ -20,9 +20,9 @@ namespace SimpleTimeTracker.Services
 
         public void AddEntry(string userName, DateOnly date, string project, string description, double hoursWorked)
         {
-            if (string.IsNullOrEmpty(userName)) { throw new ArgumentException("Invalid UserName"); }
-            if (string.IsNullOrEmpty(project)) { throw new ArgumentException("Invalid Project"); }
-            if (string.IsNullOrEmpty(description)) { throw new ArgumentException("Description"); }
+            if (string.IsNullOrWhiteSpace(userName)) { throw new ArgumentException("Invalid UserName"); }
+            if (string.IsNullOrWhiteSpace(project)) { throw new ArgumentException("Invalid Project"); }
+            if (string.IsNullOrWhiteSpace(description)) { throw new ArgumentException("Description"); }
             
             if (hoursWorked <= 0) { throw new ArgumentException("Hours Worked must be greater than zero"); }
             if (hoursWorked > 24) { throw new ArgumentException("Hours Worked cannot exceed a full day"); }
