@@ -197,6 +197,56 @@ namespace SimpleTimeTracker.Tests.Controllers
             Assert.Equal("An unexpected error occurred. Please try again later.", _controller.TempData["Error"]);
         }
         #endregion
+
+        #region GetCsv
+        [Fact]
+        public void GetCsv_ShouldCallServiceGenerateCsvOutput()
+        {
+            _mockService.Setup(service => service.GenerateCsvOutput()).Returns(string.Empty);
+            
+            var result = _controller.GetCsv();
+            
+            _mockService.Verify(service => service.GenerateCsvOutput(), Times.Once);
+        }
+
+        [Fact]
+        public void GetCsv_ShouldReturnFileResult_WithCorrectContentTypeAndName()
+        {
+            _mockService.Setup(service => service.GenerateCsvOutput()).Returns("User Name,Date,Project,...");
+            
+            var result = _controller.GetCsv() as FileContentResult;
+            
+            Assert.NotNull(result);
+            Assert.Equal("text/csv", result.ContentType);
+            Assert.Equal("timesheet.csv", result.FileDownloadName);
+        }
+
+        [Fact]
+        public void GetCsv_ShouldReturnFileResult_WithCorrectContent()
+        {
+            var csvContent = "User Name,Date,Project,...";
+            _mockService.Setup(service => service.GenerateCsvOutput()).Returns(csvContent);
+
+            var result = _controller.GetCsv() as FileContentResult;
+
+            Assert.NotNull(result);
+            var content = System.Text.Encoding.UTF8.GetString(result.FileContents);
+            Assert.Equal(csvContent, content);
+        }
+
+        [Fact]
+        public void GetCsv_ShouldHandleServiceException_Gracefully()
+        {
+            _mockService.Setup(service => service.GenerateCsvOutput()).Throws(new Exception("Service failed"));
+
+            var result = _controller.GetCsv() as RedirectToActionResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            Assert.True(_controller.TempData.ContainsKey("Error"));
+            Assert.Equal("An unexpected error occurred. Please try again later.", _controller.TempData["Error"]);
+        }
+        #endregion
         #endregion
     }
 }

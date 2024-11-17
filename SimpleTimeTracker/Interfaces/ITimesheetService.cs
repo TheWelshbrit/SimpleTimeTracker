@@ -8,5 +8,6 @@ namespace SimpleTimeTracker.Interfaces
         void AddEntry(string userName, DateOnly date, string project, string description, double hoursWorked);
         IEnumerable<string> GetDistinctUsers();
         IEnumerable<string> GetDistinctProjects();
+        string GenerateCsvOutput();
     }
 }
