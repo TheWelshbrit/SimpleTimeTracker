@@ -106,6 +106,56 @@ namespace SimpleTimeTracker.Tests.Controllers
                 It.Is<double>(hours => hours == expectedHoursWorked)
             ), Times.Once);
         }
+
+        [Fact]
+        public void AddEntry_ShouldRedirect_ToIndex_WithError_ForInvalidDay()
+        {
+            var result = _controller.AddEntry("TestUser", 2024, 5, 3000, "TestProject", "TestDescription", 2.5);
+
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
+            Assert.True(_controller.TempData.ContainsKey("Error"));
+            Assert.Equal("Invalid date provided.", _controller.TempData["Error"]);
+        }
+
+        [Fact]
+        public void AddEntry_ShouldRedirect_ToIndex_WithError_ForInvalidMonth()
+        {
+            var result = _controller.AddEntry("TestUser", 2024, 15, 21, "TestProject", "TestDescription", 2.5);
+
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
+            Assert.True(_controller.TempData.ContainsKey("Error"));
+            Assert.Equal("Invalid date provided.", _controller.TempData["Error"]);
+        }
+
+        [Fact]
+        public void AddEntry_ShouldRedirect_ToIndex_WithError_ForInvalidYear()
+        {
+            var result = _controller.AddEntry("TestUser", -1066, 5, 21, "TestProject", "TestDescription", 2.5);
+
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
+            Assert.True(_controller.TempData.ContainsKey("Error"));
+            Assert.Equal("Invalid date provided.", _controller.TempData["Error"]);
+        }
+
+        [Fact]
+        public void AddEntry_ShouldNotCallService_OnInvalidDateInput()
+        {
+            var result1 = _controller.AddEntry("TestUser", 2024, 5, 3000, "TestProject", "TestDescription", 2.5);
+            var result2 = _controller.AddEntry("TestUser", 2024, 15, 21, "TestProject", "TestDescription", 2.5);
+            var result3 = _controller.AddEntry("TestUser", -1066, 5, 21, "TestProject", "TestDescription", 2.5);
+
+            _mockService.Verify(service => service.AddEntry(
+                It.IsAny<string>(),
+                It.IsAny<DateOnly>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<double>()
+            ), Times.Never);
+            _mockService.VerifyNoOtherCalls();
+        }
         #endregion
         #endregion
     }
