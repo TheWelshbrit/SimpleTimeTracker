@@ -235,6 +235,35 @@ namespace SimpleTimeTracker.Tests.Services
             Assert.Equal(expectedRow5, csvLines[5]);
             Assert.Equal(expectedRow6, csvLines[6]);
         }
+
+        [Fact]
+        public void GenerateCsvOutput_ShouldHandleNullReturn_FromRepository()
+        {
+            _mockRepository.Setup(repo => repo.GetAllEntries()).Returns((IEnumerable<TimesheetEntry>)null!);
+
+            var csv = _service.GenerateCsvOutput();
+
+            Assert.Equal($"User Name,Date,Project,Description of Tasks,Hours Worked,Total Hours for the Day{Environment.NewLine}", csv);
+        }
+
+        [Fact]
+        public void GenerateCsvOutput_ShouldEscapeSpecialCharacters()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            var entries = new List<TimesheetEntry>
+            {
+                new TimesheetEntry { UserName = "User", Date = today, Project = "Project,1", Description = "Task\n\"1\"", HoursWorked = 5 }
+            };
+            _mockRepository.Setup(repo => repo.GetAllEntries()).Returns(entries);
+            var expectedHeader = "User Name,Date,Project,Description of Tasks,Hours Worked,Total Hours for the Day";
+            var expectedRow = $"User,{today},\"Project,1\",\"Task\n\"\"1\"\"\",5,5";
+
+            var csv = _service.GenerateCsvOutput();
+            var csvLines = csv.Split(Environment.NewLine);
+
+            Assert.Equal(expectedHeader, csvLines[0]);
+            Assert.Equal(expectedRow, csvLines[1]);
+        }
         #endregion
     }
 }
