@@ -1,8 +1,14 @@
+using SimpleTimeTracker.Interfaces;
+using SimpleTimeTracker.Services;
+using SimpleTimeTracker.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
 builder.Services.AddSession(); // Enable session support for TempData
+builder.Services.AddScoped<ITimesheetService, TimesheetService>();
+builder.Services.AddSingleton<ITimesheetRepository, InMemoryTimesheetRepository>();
 
 var app = builder.Build();
 

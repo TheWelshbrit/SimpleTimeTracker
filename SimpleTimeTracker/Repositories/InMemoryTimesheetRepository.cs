@@ -31,10 +31,5 @@ namespace SimpleTimeTracker.Repositories
         {
             return Enumerable.Empty<string>();
         }
-
-        public string GenerateCsvOutput()
-        {
-            return string.Empty;
-        }
     }
 }
