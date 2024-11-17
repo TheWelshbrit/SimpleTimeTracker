@@ -20,7 +20,13 @@ namespace SimpleTimeTracker.Services
 
         public void AddEntry(string userName, DateOnly date, string project, string description, double hoursWorked)
         {
-            return;
+            _repository.AddEntry(new TimesheetEntry{
+                UserName = userName,
+                Date = date,
+                Project = project,
+                Description = description,
+                HoursWorked = hoursWorked
+            });
         }
 
         public IEnumerable<string> GetDistinctProjects()
