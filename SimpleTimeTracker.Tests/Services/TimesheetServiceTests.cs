@@ -52,6 +52,39 @@ namespace SimpleTimeTracker.Tests.Services
                 Times.Once
             );
         }
+
+        [Fact]
+        public void AddEntry_ShouldThrowException_WhenInputsAreNullOrEmpty()
+        {
+            var date = DateOnly.FromDateTime(DateTime.Now);
+
+            Assert.Throws<ArgumentException>(() => _service.AddEntry(null, date, "Project", "Description", 1));         // Null user
+            Assert.Throws<ArgumentException>(() => _service.AddEntry(string.Empty, date, "Project", "Description", 1)); // Empty user
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", date, null, "Description", 1));            // Null project
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", date, string.Empty, "Description", 1));    // Empty project
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", date, "Project", null, 1));                // Null description
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", date, "Project", string.Empty, 1));        // Empty description
+        }
+
+        [Fact]
+        public void AddEntry_ShouldThrowException_WhenHoursWorkedIsInvalid()
+        {
+            var date = DateOnly.FromDateTime(DateTime.Now);
+
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", date, "Project", "Description", -0.01)); // negative hours
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", date, "Project", "Description", 0));     // zero hours
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", date, "Project", "Description", 24.01)); // more hours than a day allows
+        }
+
+        [Fact]
+        public void AddEntry_ShouldThrowException_WhenDateIsInFuture_OrExcessivelyInPast()
+        {
+            var futureDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+            var pastDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(-2).AddDays(-1));
+
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", futureDate, "Project", "Description", 1)); // Date in future
+            Assert.Throws<ArgumentException>(() => _service.AddEntry("User", pastDate, "Project", "Description", 1));   // Date excessively in past
+        }
         #endregion
     }
 }
