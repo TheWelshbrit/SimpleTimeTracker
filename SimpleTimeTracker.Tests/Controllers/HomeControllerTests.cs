@@ -179,6 +179,23 @@ namespace SimpleTimeTracker.Tests.Controllers
             Assert.True(_controller.TempData.ContainsKey("Error"));
             Assert.Equal("Invalid data provided", _controller.TempData["Error"]);
         }
+
+        [Fact]
+        public void AddEntry_ShouldRedirect_ToIndex_WithErrorMessage_WhenServiceThrowsUnexpectedException()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Now);
+
+            _mockService
+                .Setup(service => service.AddEntry(It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>()))
+                .Throws(new Exception("Invalid data provided"));
+
+            var result = _controller.AddEntry("TestUser", today.Year, today.Month, today.Day, "TestProject", "TestDescription", 2.5);
+
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectResult.ActionName);
+            Assert.True(_controller.TempData.ContainsKey("Error"));
+            Assert.Equal("An unexpected error occurred. Please try again later.", _controller.TempData["Error"]);
+        }
         #endregion
         #endregion
     }

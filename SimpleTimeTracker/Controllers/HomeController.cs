@@ -36,15 +36,27 @@ public class HomeController : Controller
             return RedirectToAction("Index");
         }
 
-        _timesheetService.AddEntry(
-            userName,
-            givenDate,
-            project,
-            description,
-            hoursWorked
-        );
-
-        return RedirectToAction("Index");
+        try
+        {
+            _timesheetService.AddEntry(
+                userName,
+                givenDate,
+                project,
+                description,
+                hoursWorked
+            );
+            return RedirectToAction("Index");
+        }
+        catch (ArgumentException e)
+        {
+            TempData["Error"] = e.Message;
+            return RedirectToAction("Index");
+        }
+        catch (Exception)
+        {
+            TempData["Error"] = "An unexpected error occurred. Please try again later.";
+            return RedirectToAction("Index");
+        }
     }
 
     [HttpGet]
