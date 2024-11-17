@@ -24,6 +24,13 @@ public class HomeController : Controller
     [HttpPost]
     public IActionResult AddEntry(string userName, int year, int month, int day, string project, string description, double hoursWorked)
     {
+        _timesheetService.AddEntry(
+            userName,
+            new DateOnly(year, month, day),
+            project,
+            description,
+            hoursWorked
+        );
         return RedirectToAction("Index");
     }
 
