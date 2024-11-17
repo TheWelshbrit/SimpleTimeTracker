@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleTimeTracker.Interfaces;
 using SimpleTimeTracker.Controllers;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Http;
 
 namespace SimpleTimeTracker.Tests.Controllers
 {
@@ -19,6 +21,10 @@ namespace SimpleTimeTracker.Tests.Controllers
             _mockLogger = new Mock<ILogger<HomeController>>();
             _mockService = new Mock<ITimesheetService>();
             _controller = new HomeController(_mockLogger.Object, _mockService.Object);
+            _controller.TempData = new TempDataDictionary(
+                new DefaultHttpContext(),
+                Mock.Of<ITempDataProvider>()
+            );
         }
         #endregion
         

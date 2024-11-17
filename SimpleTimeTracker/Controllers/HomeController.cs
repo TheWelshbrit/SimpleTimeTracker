@@ -24,13 +24,26 @@ public class HomeController : Controller
     [HttpPost]
     public IActionResult AddEntry(string userName, int year, int month, int day, string project, string description, double hoursWorked)
     {
+        DateOnly givenDate;
+
+        try 
+        {
+            givenDate = new DateOnly(year, month, day);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            TempData["Error"] = "Invalid date provided.";
+            return RedirectToAction("Index");
+        }
+
         _timesheetService.AddEntry(
             userName,
-            new DateOnly(year, month, day),
+            givenDate,
             project,
             description,
             hoursWorked
         );
+
         return RedirectToAction("Index");
     }
 
