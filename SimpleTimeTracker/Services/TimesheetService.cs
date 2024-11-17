@@ -55,7 +55,7 @@ namespace SimpleTimeTracker.Services
 
         public string GenerateCsvOutput()
         {
-            var entries = _repository.GetAllEntries();
+            var entries = _repository.GetAllEntries()  ?? Enumerable.Empty<TimesheetEntry>();
 
             var totalHoursPerDayPerUser = entries.GroupBy(entry => new { entry.UserName, entry.Date })
                                                  .ToDictionary(
@@ -68,10 +68,26 @@ namespace SimpleTimeTracker.Services
             foreach (var entry in entries)
             {
                 var totalHoursForDay = totalHoursPerDayPerUser[new { entry.UserName, entry.Date }];
-                csvBuilder.AppendLine($"{entry.UserName},{entry.Date},{entry.Project},{entry.Description},{entry.HoursWorked},{totalHoursForDay}");
+                csvBuilder.AppendLine(
+                    $"{EscapeUnsafeCsvCharacters(entry.UserName)}," +
+                    $"{EscapeUnsafeCsvCharacters(entry.Date.ToString())}," +
+                    $"{EscapeUnsafeCsvCharacters(entry.Project)}," +
+                    $"{EscapeUnsafeCsvCharacters(entry.Description)}," +
+                    $"{entry.HoursWorked}," +
+                    $"{totalHoursForDay}"
+                );
             }
 
             return csvBuilder.ToString();
+        }
+        private string EscapeUnsafeCsvCharacters(string unsafeString)
+        {
+            if (string.IsNullOrWhiteSpace(unsafeString)) return string.Empty;
+
+            return
+                (unsafeString.Contains(",") || unsafeString.Contains("\"") || unsafeString.Contains("\n"))
+                ? $"\"{unsafeString.Replace("\"", "\"\"")}\"" // Double any quote marks in the string, and then wrap the entire string in quotemarks
+                : unsafeString;                               // return the string as-is if no unsafe characters are present             
         }
     }
 }
